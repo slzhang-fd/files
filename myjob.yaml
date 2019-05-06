@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  # Unique key of the Job instance
+  name: example-job
+spec:
+  completions: 50
+  parallelism: 5
+  template:
+    metadata:
+      name: example-job
+    spec:
+      containers:
+      - name: shell
+        #image: perl
+        image: r-base
+        command: ["/bin/bash", "-c"]
+        args: ["Rscript /tmp/persistent/myscript.R"]
+        #command: ["/bin/bash", "-c", "printenv PODNAME"]
+        #command: ["perl"]
+        #args: ["-Mbignum=bpi", "-wle", "print bpi(2000)"]
+        #command: ["/bin/bash", "-c", "touch /tmp/persistent/data"]
+        volumeMounts:
+        - name: mypd
+          mountPath: "/tmp/persistent"
+        env:
+        - name: PODNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        resources:
+          requests:
+            cpu: "500m"
+      volumes:
+      - name: mypd
+        persistentVolumeClaim:
+          claimName: nfs
+      # Do not restart containers after they exit
+      restartPolicy: Never
