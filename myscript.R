@@ -1,4 +1,4 @@
 date()
 jobid<-Sys.getenv("PODNAME");
-a=1
-write.csv(a, file=paste0("/tmp/persistent/",jobid,".rda"))
+a=rnorm(1)
+save(a, file=paste0("/tmp/persistent/",jobid,".rda"))
